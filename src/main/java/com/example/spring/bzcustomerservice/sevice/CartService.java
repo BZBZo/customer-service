@@ -17,29 +17,15 @@ public class CartService {
     public void addToCart(Long customerId, Long productId, Integer quantity) {
         Optional<Cart> optionalCart = cartRepository.findByCustomerId(customerId);
 
-        Cart cart;
-        if (optionalCart.isPresent()) {
-            cart = optionalCart.get();
-        } else {
-            cart = new Cart();
-            cart.setCustomerId(customerId);
-        }
+        Cart cart = optionalCart.orElseGet(() -> Cart.createEmptyCart(customerId));
 
-        // 기존 productId가 있으면 수량만 추가, 없으면 새로 추가
-        boolean productExists = false;
-        for (ProductQuantityDTO pq : cart.getProducts()) {
-            if (pq.getProductId().equals(productId)) {
-                pq.setQuantity(pq.getQuantity() + quantity);
-                productExists = true;
-                break;
-            }
-        }
-
-        if (!productExists) {
-            cart.getProducts().add(new ProductQuantityDTO(productId, quantity));
-        }
+        String updatedProducts = Cart.addProductToCart(cart.getProducts(), new ProductQuantityDTO(productId, quantity));
+        cart.setProducts(updatedProducts);
 
         cartRepository.save(cart);
+        System.out.println("Cart updated: " + cart); // 로그 추가
     }
+
+
 }
 
