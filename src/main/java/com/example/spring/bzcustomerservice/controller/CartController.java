@@ -10,16 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("/customer")
 @RequiredArgsConstructor
 public class CartController {
 
     private final CartService cartService;
 
-    @PostMapping("/add")
+    @PostMapping("/cart/add")
     public ResponseEntity<String> addToCart(@RequestBody CartRequestDTO cartRequest) {
-        cartService.addToCart(cartRequest.getCustomerId(), cartRequest.getProductId(), cartRequest.getQuantity());
+        cartService.addToCart(cartRequest.getMemberNo(), cartRequest.getProductId(), cartRequest.getQuantity());
         return ResponseEntity.ok("장바구니에 추가되었습니다.");
     }
 }
-

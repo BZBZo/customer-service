@@ -14,18 +14,15 @@ public class CartService {
 
     private final CartRepository cartRepository;
 
-    public void addToCart(Long customerId, Long productId, Integer quantity) {
-        Optional<Cart> optionalCart = cartRepository.findByCustomerId(customerId);
+    public void addToCart(Long memberNo, Long productId, Integer quantity) {
+        Optional<Cart> optionalCart = cartRepository.findByMemberNo(memberNo);
 
-        Cart cart = optionalCart.orElseGet(() -> Cart.createEmptyCart(customerId));
+        Cart cart = optionalCart.orElseGet(() -> Cart.createEmptyCart(memberNo));
 
-        String updatedProducts = Cart.addProductToCart(cart.getProducts(), new ProductQuantityDTO(productId, quantity));
+        String updatedProducts = Cart.addProductToCart(cart.getProducts(),
+                new ProductQuantityDTO(productId, quantity));
         cart.setProducts(updatedProducts);
 
         cartRepository.save(cart);
-        System.out.println("Cart updated: " + cart); // 로그 추가
     }
-
-
 }
-
