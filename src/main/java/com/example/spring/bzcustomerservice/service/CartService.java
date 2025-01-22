@@ -1,4 +1,4 @@
-package com.example.spring.bzcustomerservice.sevice;
+package com.example.spring.bzcustomerservice.service;
 
 import com.example.spring.bzcustomerservice.dto.CartRequestDTO;
 import com.example.spring.bzcustomerservice.dto.ProductQuantityDTO;
@@ -42,9 +42,8 @@ public class CartService {
      * @param memberNo 회원 번호
      * @return 장바구니 상품 목록
      */
-    public List<ProductQuantityDTO> getCartItems(String token) {
-        Long memberNo = tokenService.getMemberNoFromToken(token);
-        Cart cart = cartRepository.findByCustomerId(memberNo)
+    public List<ProductQuantityDTO> getCartItems(Long memberNo) {
+        Cart cart = cartRepository.findByMemberNo(memberNo)
                 .orElseThrow(() -> new IllegalArgumentException("장바구니가 없습니다."));
 
         return ProductQuantityDTO.fromJson(cart.getProducts());

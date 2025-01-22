@@ -1,4 +1,4 @@
-package com.example.spring.bzcustomerservice.sevice;
+package com.example.spring.bzcustomerservice.service;
 
 import org.springframework.web.multipart.MultipartFile;
 

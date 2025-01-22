@@ -1,4 +1,4 @@
-package com.example.spring.bzcustomerservice.sevice;
+package com.example.spring.bzcustomerservice.service;
 
 import com.example.spring.bzcustomerservice.config.s3.S3Uploader;
 import org.springframework.stereotype.Service;
