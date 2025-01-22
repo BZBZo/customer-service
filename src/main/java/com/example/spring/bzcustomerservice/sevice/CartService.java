@@ -1,28 +1,52 @@
 package com.example.spring.bzcustomerservice.sevice;
 
+import com.example.spring.bzcustomerservice.dto.CartRequestDTO;
 import com.example.spring.bzcustomerservice.dto.ProductQuantityDTO;
 import com.example.spring.bzcustomerservice.entity.Cart;
 import com.example.spring.bzcustomerservice.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CartService {
 
     private final CartRepository cartRepository;
 
-    public void addToCart(Long memberNo, Long productId, Integer quantity) {
-        Optional<Cart> optionalCart = cartRepository.findByMemberNo(memberNo);
+    /**
+     * 장바구니에 상품 추가
+     */
+    public void addToCart(CartRequestDTO requestDTO) {
+        Cart cart = cartRepository.findByMemberNo(requestDTO.getMemberNo())
+                .orElseGet(() -> Cart.createEmptyCart(requestDTO.getMemberNo()));
 
-        Cart cart = optionalCart.orElseGet(() -> Cart.createEmptyCart(memberNo));
+        // 새 상품 추가
+        ProductQuantityDTO newProduct = ProductQuantityDTO.builder()
+                .productId(requestDTO.getProductId())
+                .quantity(requestDTO.getQuantity())
+                .build();
 
-        String updatedProducts = Cart.addProductToCart(cart.getProducts(),
-                new ProductQuantityDTO(productId, quantity));
-        cart.setProducts(updatedProducts);
+        cart.addProductToCart(newProduct);
 
+        // 장바구니 저장
         cartRepository.save(cart);
+        log.info("Updated Cart: {}", cart.getProducts());
+    }
+
+    /**
+     * 장바구니 아이템 가져오기
+     * @param memberNo 회원 번호
+     * @return 장바구니 상품 목록
+     */
+    public List<ProductQuantityDTO> getCartItems(String token) {
+        Long memberNo = tokenService.getMemberNoFromToken(token);
+        Cart cart = cartRepository.findByCustomerId(memberNo)
+                .orElseThrow(() -> new IllegalArgumentException("장바구니가 없습니다."));
+
+        return ProductQuantityDTO.fromJson(cart.getProducts());
     }
 }
