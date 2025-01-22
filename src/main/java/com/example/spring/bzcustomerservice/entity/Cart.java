@@ -3,7 +3,6 @@ package com.example.spring.bzcustomerservice.entity;
 import com.example.spring.bzcustomerservice.dto.ProductQuantityDTO;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,20 +33,18 @@ public class Cart {
      * @return 빈 Cart 객체
      */
     public static Cart createEmptyCart(Long memberNo) {
-        Cart cart = new Cart();
-        cart.setMemberNo(memberNo); // memberNo 설정
-        cart.setProducts(""); // 초기 빈 장바구니 설정
-        return cart;
+        return Cart.builder()
+                .memberNo(memberNo)
+                .products(ProductQuantityDTO.toJson(new ArrayList<>())) // 빈 리스트 JSON 변환
+                .build();
     }
 
     /**
      * 상품을 장바구니에 추가하는 메서드
-     * @param productList 기존 상품 목록 (JSON 형태)
      * @param newProduct 추가할 상품 정보
-     * @return 업데이트된 상품 목록 (JSON 형태)
      */
-    public static String addProductToCart(String productList, ProductQuantityDTO newProduct) {
-        List<ProductQuantityDTO> currentProducts = ProductQuantityDTO.fromJson(productList);
+    public void addProductToCart(ProductQuantityDTO newProduct) {
+        List<ProductQuantityDTO> currentProducts = ProductQuantityDTO.fromJson(this.products);
 
         // 동일한 상품이 있는 경우 수량 증가
         boolean productExists = false;
@@ -63,6 +60,7 @@ public class Cart {
             currentProducts.add(newProduct); // 새로운 상품 추가
         }
 
-        return ProductQuantityDTO.toJson(currentProducts);
+        // 업데이트된 상품 리스트를 JSON 문자열로 저장
+        this.products = ProductQuantityDTO.toJson(currentProducts);
     }
 }

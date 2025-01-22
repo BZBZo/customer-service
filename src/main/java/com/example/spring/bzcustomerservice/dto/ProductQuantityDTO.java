@@ -1,6 +1,6 @@
 package com.example.spring.bzcustomerservice.dto;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 
@@ -17,27 +17,26 @@ public class ProductQuantityDTO {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * JSON 문자열을 객체 리스트로 변환
+     */
     public static List<ProductQuantityDTO> fromJson(String json) {
-        if (json == null || json.isEmpty()) {
-            return List.of(); // 빈 리스트 반환
-        }
         try {
-            return objectMapper.readValue(json, new TypeReference<List<ProductQuantityDTO>>() {});
-        } catch (Exception e) {
-            throw new RuntimeException("JSON 파싱 중 오류 발생: " + json, e);
+            return objectMapper.readValue(json,
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, ProductQuantityDTO.class));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse JSON", e);
         }
     }
 
-
-    public static String toJson(List<ProductQuantityDTO> productList) {
-        if (productList == null) {
-            return "[]"; // 빈 JSON 배열 반환
-        }
+    /**
+     * 객체 리스트를 JSON 문자열로 변환
+     */
+    public static String toJson(List<ProductQuantityDTO> products) {
         try {
-            return objectMapper.writeValueAsString(productList);
-        } catch (Exception e) {
-            throw new RuntimeException("JSON 변환 중 오류 발생: " + productList, e);
+            return objectMapper.writeValueAsString(products);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert to JSON", e);
         }
     }
-
 }
