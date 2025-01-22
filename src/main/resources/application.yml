@@ -5,13 +5,13 @@ spring:
   application:
     name: bz-customer-service
   datasource:
-    url: jdbc:mysql://localhost:3306/bz_customer?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/bz_customer?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8}
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 1234
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 

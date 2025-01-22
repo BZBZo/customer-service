@@ -20,7 +20,6 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "customer_id", nullable = false) // 실제 DB 컬럼 이름이 "customer_id"라면 유지
     private Long memberNo;
 
     @Lob

@@ -30,7 +30,7 @@ public class CartController {
      */
     // 장바구니 조회
     @GetMapping("/cart/list")
-    public ResponseEntity<List<ProductQuantityDTO>> getCartItems(@RequestHeader("Authorization") String token) {
-        return ResponseEntity.ok(cartService.getCartItems(token));
+    public ResponseEntity<List<ProductQuantityDTO>> getCartItems(Long memberNo) {
+        return ResponseEntity.ok(cartService.getCartItems(memberNo));
     }
 }
