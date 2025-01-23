@@ -17,9 +17,6 @@ public class CartService {
 
     private final CartRepository cartRepository;
 
-    /**
-     * 장바구니에 상품 추가
-     */
     public void addToCart(CartRequestDTO requestDTO) {
         Cart cart = cartRepository.findByMemberNo(requestDTO.getMemberNo())
                 .orElseGet(() -> Cart.createEmptyCart(requestDTO.getMemberNo()));
@@ -38,7 +35,7 @@ public class CartService {
     }
 
     /**
-     * 장바구니 아이템 가져오기
+     * 특정 회원(memberNo)의 장바구니 상품 목록 가져오기
      * @param memberNo 회원 번호
      * @return 장바구니 상품 목록
      */
@@ -46,6 +43,9 @@ public class CartService {
         Cart cart = cartRepository.findByMemberNo(memberNo)
                 .orElseThrow(() -> new IllegalArgumentException("장바구니가 없습니다."));
 
-        return ProductQuantityDTO.fromJson(cart.getProducts());
+        // products 컬럼(JSON)을 ProductQuantityDTO 리스트로 변환
+        List<ProductQuantityDTO> productList = ProductQuantityDTO.fromJson(cart.getProducts());
+        log.info("Fetched Cart Items for MemberNo {}: {}", memberNo, productList);
+        return productList;
     }
 }

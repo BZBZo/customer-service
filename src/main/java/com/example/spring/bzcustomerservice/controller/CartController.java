@@ -16,21 +16,19 @@ public class CartController {
 
     private final CartService cartService;
 
-    /**
-     * 장바구니에 상품 추가
-     */
     @PostMapping("/cart/add")
     public ResponseEntity<String> addToCart(@RequestBody CartRequestDTO cartRequest) {
-        cartService.addToCart(cartRequest); // CartRequestDTO 사용
+        cartService.addToCart(cartRequest);
         return ResponseEntity.ok("장바구니에 추가되었습니다.");
     }
 
     /**
-     * 장바구니 상품 조회
+     * 특정 회원(memberNo)의 장바구니 상품 목록 가져오기
      */
-    // 장바구니 조회
     @GetMapping("/cart/list")
-    public ResponseEntity<List<ProductQuantityDTO>> getCartItems(Long memberNo) {
-        return ResponseEntity.ok(cartService.getCartItems(memberNo));
+    public ResponseEntity<List<ProductQuantityDTO>> getCartItems(@RequestParam Long memberNo) {
+        List<ProductQuantityDTO> cartItems = cartService.getCartItems(memberNo);
+        return ResponseEntity.ok(cartItems); // JSON으로 반환
     }
 }
+
