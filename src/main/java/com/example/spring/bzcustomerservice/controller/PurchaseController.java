@@ -20,7 +20,7 @@ public class PurchaseController {
         System.out.println("dto member No. :: " + dto.getMemberNo());
         try {
             purchaseService.savePurchaseHistory(dto);
-            System.out.println("바로 구매 - 저장 성공");
+            System.out.println("구매 내역 저장 성공");
             return ResponseEntity.ok("저장 성공");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 요청 데이터: " + e.getMessage());
