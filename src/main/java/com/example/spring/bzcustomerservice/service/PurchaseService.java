@@ -1,7 +1,7 @@
 package com.example.spring.bzcustomerservice.service;
 
 import com.example.spring.bzcustomerservice.dto.ProductQuantityDTO;
-import com.example.spring.bzcustomerservice.dto.PurchaseHistoryDTO;
+import com.example.spring.bzcustomerservice.dto.PurchaseDTO;
 import com.example.spring.bzcustomerservice.entity.Cart;
 import com.example.spring.bzcustomerservice.entity.Purchase;
 import com.example.spring.bzcustomerservice.repository.CartRepository;
@@ -20,7 +20,7 @@ public class PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final CartRepository cartRepository;
 
-    public void savePurchaseHistory(PurchaseHistoryDTO dto) {
+    public void savePurchaseHistory(PurchaseDTO dto) {
         // 1. 구매 내역 저장
         Purchase purchase = dto.toPurchase();
         purchaseRepository.save(purchase);
@@ -47,10 +47,16 @@ public class PurchaseService {
         cartRepository.save(cart);
     }
 
-    public List<PurchaseHistoryDTO> getPurchaseListByMemberNo(Long memberNo) {
+    public List<PurchaseDTO> getPurchaseListByMemberNo(Long memberNo) {
         List<Purchase> purchases = purchaseRepository.findAllByMemberNo(memberNo);
+        for(Purchase purchase : purchases) {
+            System.out.println("purchaseId "+purchase.getPurchaseId());
+            System.out.println("productList "+purchase.getProductList());
+        }
+
         return purchases.stream()
-                .map(purchase -> PurchaseHistoryDTO.builder()
+                .map(purchase -> PurchaseDTO.builder()
+                        .purchaseId(purchase.getPurchaseId())
                         .orderId(purchase.getOrderId())
                         .paymentKey(purchase.getPaymentKey())
                         .totalAmount(purchase.getTotalAmount())

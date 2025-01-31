@@ -17,7 +17,7 @@ public class Purchase {
 
     private String orderId;
     private String paymentKey;
-    private Long totalAmount;
+    private Double totalAmount;
     private String approvedAt;
     private String method;
     private Long memberNo;
