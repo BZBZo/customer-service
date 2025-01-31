@@ -1,17 +1,21 @@
 package com.example.spring.bzcustomerservice.dto;
 
 import com.example.spring.bzcustomerservice.entity.Purchase;
+import jakarta.persistence.Transient;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
-public class PurchaseHistoryDTO {
+public class PurchaseDTO {
     String orderId;
+    Long purchaseId;
     String paymentKey;
-    Long totalAmount;
+    Double totalAmount;
     String approvedAt;
     String method;
     Long memberNo;
@@ -19,6 +23,7 @@ public class PurchaseHistoryDTO {
 
     public Purchase toPurchase() {
         return Purchase.builder()
+                .purchaseId(purchaseId)
                 .orderId(orderId)
                 .paymentKey(paymentKey)
                 .totalAmount(totalAmount)
@@ -28,5 +33,8 @@ public class PurchaseHistoryDTO {
                 .productList(productList)
                 .build();
     }
+
+    @Transient
+    private List<ProdReadResponseDTO> products;
 
 }

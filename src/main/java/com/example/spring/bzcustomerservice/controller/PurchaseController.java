@@ -1,6 +1,6 @@
 package com.example.spring.bzcustomerservice.controller;
 
-import com.example.spring.bzcustomerservice.dto.PurchaseHistoryDTO;
+import com.example.spring.bzcustomerservice.dto.PurchaseDTO;
 import com.example.spring.bzcustomerservice.dto.ReviewDTO;
 import com.example.spring.bzcustomerservice.service.PurchaseService;
 import com.example.spring.bzcustomerservice.service.ReviewService;
@@ -19,7 +19,7 @@ public class PurchaseController {
     private final ReviewService reviewService;
 
     @PostMapping("/history")
-    public ResponseEntity<?> savePurchaseHistory(@RequestBody PurchaseHistoryDTO dto) {
+    public ResponseEntity<?> savePurchaseHistory(@RequestBody PurchaseDTO dto) {
         System.out.println("dto member No. :: " + dto.getMemberNo());
         try {
             purchaseService.savePurchaseHistory(dto);
@@ -34,7 +34,8 @@ public class PurchaseController {
     }
 
     @GetMapping("/history")
-    List<PurchaseHistoryDTO> getPurchaseListByMemberNo(@RequestParam Long memberNo){
+    List<PurchaseDTO> getPurchaseListByMemberNo(@RequestParam Long memberNo){
+        System.out.println("memberNo : " + memberNo);
         return purchaseService.getPurchaseListByMemberNo(memberNo);
     }
 
