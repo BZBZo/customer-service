@@ -20,7 +20,7 @@ public class ImgServiceImpl implements ImgService {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("MultipartFile must not be null or empty.");
         } else {
-            url = s3Uploader.uploadFileToS3(file, "static/bz-ad/");
+            url = s3Uploader.uploadFileToS3(file, "static/bz-review/");
             return url;
         }
     }

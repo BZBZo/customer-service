@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,17 +14,16 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "review")
 public class Review {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reviewId;
 
     private String content;
     private LocalDateTime date;
-
     private Long memberNo;
     private Long productId;
     private Long purchaseId;
 
-    private String picturePath;
-
+    private String imgUrls;
 }
