@@ -7,6 +7,10 @@ import com.example.spring.bzcustomerservice.service.PurchaseService;
 import com.example.spring.bzcustomerservice.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,23 +44,39 @@ public class PurchaseController {
     }
 
     @GetMapping("/history")
-    List<PurchaseDTO> getPurchaseListByMemberNo(@RequestParam Long memberNo){
+    List<PurchaseDTO> getPurchaseListByMemberNo(@RequestParam Long memberNo) {
         System.out.println("memberNo : " + memberNo);
         return purchaseService.getPurchaseListByMemberNo(memberNo);
     }
 
     @GetMapping("/history/review")
-    List<ReviewDTO> findReviewsByPurchaseId(@RequestParam Long purchaseId){
+    List<ReviewDTO> findReviewsByPurchaseId(@RequestParam Long purchaseId) {
         return reviewService.findReviewsByPurchaseId(purchaseId);
     }
 
+    @GetMapping("/product/review/list")
+    Page<ReviewDTO> getReviewList(@RequestParam Long productId,
+                                  @RequestParam("page") int page,
+                                  @RequestParam("size") int size,
+                                  @RequestHeader("Accept") String acceptHeader // Accept 헤더 추가
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("reviewId").ascending());
+        return reviewService.findReviewsByProductId(productId, pageable);
+    }
+
+    @GetMapping("/product/review/count")
+    Integer countReview(@RequestParam Long productId){
+        return reviewService.countReview(productId).intValue();
+    }
+
+
     @PostMapping(value = "/history/review", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, String>> writeReview(
-            @RequestParam("memberNo") Long memberNo,  // 일반 텍스트 데이터는 @RequestParam으로 변경
+            @RequestParam("memberNo") Long memberNo,
             @RequestParam("productId") Long productId,
             @RequestParam("purchaseId") Long purchaseId,
             @RequestParam("content") String content,
-            @RequestPart(value = "reviewImg", required = false) List<MultipartFile> images) {
+            @RequestPart(value = "reviewImg", required = false) MultipartFile[] images) {
 
         Map<String, String> response = new HashMap<>();
 
@@ -64,44 +84,47 @@ public class PurchaseController {
             log.info("📌 리뷰 저장 요청 - memberNo: {}, productId: {}, purchaseId: {}, content: {}",
                     memberNo, productId, purchaseId, content);
 
-            // 이미지 URL 저장을 위한 String
             String imgUrls = "";
 
-            // 이미지 업로드 (이미지가 있을 경우에만)
-            if (images != null && !images.isEmpty()) {
+            if (images != null && images.length > 0) {
                 List<String> imgUrlList = new ArrayList<>();
 
                 for (MultipartFile image : images) {
-                    // S3에 업로드할 고유한 파일 이름 생성
+                    if (image == null || image.isEmpty()) {
+                        // 빈 파일은 건너뜁니다.
+                        continue;
+                    }
                     String uniqueFileName = "static/bz-image/" + UUID.randomUUID();
-
-                    // S3에 이미지 업로드 후 URL 반환
                     String imgUrl = imgServiceImpl.uploadImg(uniqueFileName, image);
                     imgUrlList.add(imgUrl);
                 }
 
-                // URL 리스트를 쉼표(,)로 연결하여 하나의 문자열로 변환
                 imgUrls = String.join(",", imgUrlList);
             }
 
             log.info("📌 최종 저장할 이미지 URL: {}", imgUrls);
 
-            // 리뷰 저장
             reviewService.saveReview(memberNo, productId, purchaseId, content, imgUrls);
 
-            // 성공 응답
             response.put("success", "true");
             response.put("message", "리뷰 작성이 완료되었습니다.");
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             log.error("🚨 리뷰 저장 중 오류 발생: {}", e.getMessage(), e);
-
-            // 예외 발생 시 에러 응답 반환
             response.put("success", "false");
             response.put("message", "리뷰 저장 중 오류가 발생했습니다.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+
+    @GetMapping("/history/review/detail")
+    ReviewDTO findReviewByIds(
+            @RequestParam("purchaseId") Long purchaseId,
+            @RequestParam("productId") Long productId,
+            @RequestParam("memberNo") Long memberNo) {
+        return reviewService.findReviewByIds(purchaseId, productId, memberNo);
     }
 
 

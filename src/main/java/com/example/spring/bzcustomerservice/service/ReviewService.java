@@ -5,6 +5,8 @@ import com.example.spring.bzcustomerservice.entity.Review;
 import com.example.spring.bzcustomerservice.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,5 +39,17 @@ public class ReviewService {
         reviewRepository.save(review);
 
         log.info("✅ 리뷰 저장 완료 - ID: {}", review.getReviewId());
+    }
+
+    public ReviewDTO findReviewByIds(Long purchaseId, Long productId, Long memberNo) {
+        return reviewRepository.findReviewByPurchaseIdAndProductIdAndMemberNo(purchaseId, productId, memberNo);
+    }
+
+    public Page<ReviewDTO> findReviewsByProductId(Long productId, Pageable pageable) {
+        return reviewRepository.findReviewsByProductId(productId, pageable);
+    }
+
+    public Long countReview(Long productId) {
+        return reviewRepository.countByProductId(productId);
     }
 }
