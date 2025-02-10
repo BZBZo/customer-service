@@ -44,9 +44,11 @@ public class PurchaseController {
     }
 
     @GetMapping("/history")
-    List<PurchaseDTO> getPurchaseListByMemberNo(@RequestParam Long memberNo) {
-        System.out.println("memberNo : " + memberNo);
-        return purchaseService.getPurchaseListByMemberNo(memberNo);
+    public Page<PurchaseDTO> getPurchaseListByMemberNo(
+            @RequestParam Long memberNo,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return purchaseService.getPurchaseListByMemberNo(memberNo, page, size);
     }
 
     @GetMapping("/history/review")

@@ -8,6 +8,10 @@ import com.example.spring.bzcustomerservice.repository.CartRepository;
 import com.example.spring.bzcustomerservice.repository.PurchaseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,24 +51,26 @@ public class PurchaseService {
         cartRepository.save(cart);
     }
 
-    public List<PurchaseDTO> getPurchaseListByMemberNo(Long memberNo) {
-        List<Purchase> purchases = purchaseRepository.findAllByMemberNo(memberNo);
-        for(Purchase purchase : purchases) {
-            System.out.println("purchaseId "+purchase.getPurchaseId());
-            System.out.println("productList "+purchase.getProductList());
-        }
+    public Page<PurchaseDTO> getPurchaseListByMemberNo(Long memberNo, int page, int size) {
+        int adjustedPage = (page > 0) ? page - 1 : 0;
+        Pageable pageable = PageRequest.of(adjustedPage, size, Sort.by("approvedAt").descending());
 
-        return purchases.stream()
-                .map(purchase -> PurchaseDTO.builder()
-                        .purchaseId(purchase.getPurchaseId())
-                        .orderId(purchase.getOrderId())
-                        .paymentKey(purchase.getPaymentKey())
-                        .totalAmount(purchase.getTotalAmount())
-                        .approvedAt(purchase.getApprovedAt())
-                        .method(purchase.getMethod())
-                        .memberNo(purchase.getMemberNo())
-                        .productList(purchase.getProductList())
-                        .build())
-                .collect(Collectors.toList());
+        Page<Purchase> purchases = purchaseRepository.findAllByMemberNo(memberNo, pageable);
+
+        purchases.forEach(purchase -> {
+            System.out.println("purchaseId: " + purchase.getPurchaseId());
+            System.out.println("productList JSON: " + purchase.getProductList());
+        });
+
+        return purchases.map(purchase -> PurchaseDTO.builder()
+                .purchaseId(purchase.getPurchaseId())
+                .orderId(purchase.getOrderId())
+                .paymentKey(purchase.getPaymentKey())
+                .totalAmount(purchase.getTotalAmount())
+                .approvedAt(purchase.getApprovedAt())
+                .method(purchase.getMethod())
+                .memberNo(purchase.getMemberNo())
+                .productList(purchase.getProductList()) // ✅ 여기에 데이터가 들어오는지 확인
+                .build());
     }
 }
