@@ -52,4 +52,8 @@ public class ReviewService {
     public Long countReview(Long productId) {
         return reviewRepository.countByProductId(productId);
     }
+
+    public void deleteReviewByIds(Long purchaseId, Long productId, Long memberNo) {
+        reviewRepository.deleteByPurchaseIdAndProductIdAndMemberNo(purchaseId, productId, memberNo);
+    }
 }
