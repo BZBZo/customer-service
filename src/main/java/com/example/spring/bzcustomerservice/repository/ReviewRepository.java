@@ -19,4 +19,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Long countByProductId(Long productId);
 
     ReviewDTO findReviewByPurchaseIdAndProductIdAndMemberNo(Long purchaseId, Long productId, Long memberNo);
+
+    void deleteByPurchaseIdAndProductIdAndMemberNo(Long purchaseId, Long productId, Long memberNo);
 }

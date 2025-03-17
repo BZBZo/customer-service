@@ -103,5 +103,12 @@ public class ReviewController {
         return reviewService.findReviewByIds(purchaseId, productId, memberNo);
     }
 
+    @DeleteMapping("/history/review/detail")
+    void deleteReviewByIds(
+            @RequestParam("purchaseId") Long purchaseId,
+            @RequestParam("productId") Long productId,
+            @RequestParam("memberNo") Long memberNo) {
+        reviewService.deleteReviewByIds(purchaseId, productId, memberNo);
+    }
 
 }
